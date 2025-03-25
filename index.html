@@ -1,17 +1,105 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fire Fight</title>
+    <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="assets/images/mago_frente.PNG">
-
-  <meta charset="UTF-8">
-  <title>Wave Survival Game</title>
-  <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('assets/images/background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            text-shadow: 1px 1px 4px black;
+        }
+        header {
+            width: 100%;
+            text-align: center;
+            padding: 20px 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            font-size: 42px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+        }
+        #content {
+            display: flex;
+            flex-direction: row;
+            flex: 1;
+            padding: 20px;
+        }
+        #container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 70%;
+        }
+        #instructions {
+            width: 30%;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            border-left: 3px solid #ffcc00;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+        }
+        h2 {
+            color: #ffcc00;
+            text-align: center;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        canvas {
+            border: 3px solid #ffcc00;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.7);
+        }
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 16px;
+            color: white;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 0;
+            box-shadow: 0px -4px 10px rgba(0, 0, 0, 0.5);
+        }
+    </style>
 </head>
-<body>
-  <canvas id="gameCanvas" width="800" height="600"></canvas>
-  <script src="game.js"></script>
-  
-  
-  
+<body> 
+    <header>Fire Fight</header>
+    <div id="content">
+        <div id="container">
+            <canvas id="gameCanvas" width="800" height="600"></canvas>
+            <footer>
+                22200752 Julio Cesar Meneses Oropeza<br>
+                22200760 Jose Efren Quintanilla Morales<br>
+                22200732 Mario Garcia Terrazas
+            </footer>
+        </div>
+        <div id="instructions">
+            <h2>Instrucciones del Juego</h2>
+            <ul>
+                <li>🔥 Ayuda al mago a vencer los dragones, ¡clickealos hasta que desaparezcan!</li>
+                <li>🖱️ Usa el mouse para apuntar y hacer clic en los enemigos para atacarlos.</li>
+                <li>⚔️ Evita que los enemigos te alcancen, ya que reducen tu vida.</li>
+                <li>🐉 Derrota al jefe que aparece cada tres oleadas.</li>
+                <li>🎯 Recoge puntos derrotando enemigos y sobreviviendo a las oleadas.</li>
+                <li>💀 ¡El juego termina cuando tu vida llega a cero!</li>
+            </ul>
+        </div>
+    </div>
+    <script src="game.js"></script>
 </body>
 </html>

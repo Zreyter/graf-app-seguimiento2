@@ -1,7 +1,7 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 let showWaveMessage = false;
-
+ 
 // Cargar sonidos
 const ambientSound = new Audio("assets/sounds/ambient.mp3");
 const attackSound = new Audio("assets/sounds/attack.mp3");
