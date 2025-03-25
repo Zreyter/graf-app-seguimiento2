@@ -2,7 +2,17 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 let showWaveMessage = false;
 
-// Cambiar el cursor
+// Cargar sonidos
+const ambientSound = new Audio("assets/sounds/ambient.mp3");
+const attackSound = new Audio("assets/sounds/attack.mp3");
+const gameLossSound = new Audio("assets/sounds/game_loss.mp3");
+
+// Reproducir música de fondo
+ambientSound.loop = true;
+ambientSound.volume = 0.5;
+ambientSound.play();
+
+// Cambiar cursor
 canvas.style.cursor = "url('assets/images/cursor.cur'), auto";
 
 // Cargar imágenes
@@ -38,6 +48,15 @@ let isSpawning = true;
 let enemiesToSpawn = 15;
 let enemiesDefeated = 0;
 let gameOver = false;
+
+// Jefe
+let bossActive = false;
+let bossHP = 0;
+let bossX = 0;
+let bossY = 0;
+let bossSpeed = 1.2; // Velocidad reducida
+let bossMaxHP = 15;
+let bossIncrement = 3;
 
 function spawnEnemy() {
   if (gameOver) return;
@@ -82,6 +101,28 @@ function spawnEnemy() {
   });
 }
 
+function spawnBoss() {
+  if (wave % 3 === 0 && !bossActive && enemiesDefeated >= enemiesToSpawn) {
+    bossActive = true;
+    bossHP = bossMaxHP;
+
+    const edge = Math.floor(Math.random() * 4);
+    if (edge === 0) {
+      bossX = -200; // Más lejos
+      bossY = Math.random() * canvas.height;
+    } else if (edge === 1) {
+      bossX = canvas.width + 200; // Más lejos
+      bossY = Math.random() * canvas.height;
+    } else if (edge === 2) {
+      bossX = Math.random() * canvas.width;
+      bossY = -200; // Más lejos
+    } else {
+      bossX = Math.random() * canvas.width;
+      bossY = canvas.height + 200; // Más lejos
+    }
+  }
+}
+
 function startWave() {
   isSpawning = true;
   enemiesToSpawn = 15 + (wave - 1) * 3;
@@ -106,6 +147,8 @@ function distance(ax, ay, bx, by) {
 function update() {
   if (gameOver) return;
 
+  if (!bossActive) spawnBoss();
+
   enemies.forEach((enemy, index) => {
     const angle = Math.atan2(player.y - enemy.y, player.x - enemy.x);
     enemy.x += Math.cos(angle) * enemy.speed;
@@ -121,23 +164,37 @@ function update() {
     }
   });
 
-  if (player.life <= 0) {
-    gameOver = true;
+  if (bossActive) {
+    const angle = Math.atan2(player.y - bossY, player.x - bossX);
+    bossX += Math.cos(angle) * bossSpeed;
+    bossY += Math.sin(angle) * bossSpeed;
+
+    if (distance(bossX, bossY, player.x, player.y) <= player.radius + 60) {
+      player.life -= 3;
+    }
   }
 
-  if (enemiesDefeated >= enemiesToSpawn && !gameOver && !showWaveMessage) {
-    // Solo incrementamos la oleada si los enemigos han sido derrotados y el mensaje no está en pantalla
+  if (player.life <= 0) {
+    gameOver = true;
+    ambientSound.pause();
+    gameLossSound.play();
+  }
+
+  if (enemiesDefeated >= enemiesToSpawn && !bossActive && !showWaveMessage) {
     wave++;
-    showWaveMessage = true; // Mostrar mensaje de preparación
+    showWaveMessage = true;
     setTimeout(() => {
-      showWaveMessage = false; // Ocultar mensaje después de 2 segundos
-      startWave(); // Iniciar la siguiente oleada
+      showWaveMessage = false;
+      startWave();
     }, 2000);
   }
 }
 
 canvas.addEventListener("click", (e) => {
   if (gameOver) return;
+
+  attackSound.currentTime = 0;
+  attackSound.play();
 
   const rect = canvas.getBoundingClientRect();
   const mouseX = e.clientX - rect.left;
@@ -153,6 +210,16 @@ canvas.addEventListener("click", (e) => {
       }
     }
   });
+
+  if (bossActive && distance(mouseX, mouseY, bossX, bossY) <= 60) {
+    bossHP--;
+    if (bossHP <= 0) {
+      score += 100;
+      bossActive = false;
+      enemiesDefeated = 0;
+      startWave();
+    }
+  }
 });
 
 function draw() {
@@ -170,7 +237,7 @@ function draw() {
       canvas.width / 2 - 110,
       canvas.height / 2 + 10
     );
-    return; // Evitar dibujar otros elementos mientras se muestra el mensaje
+    return;
   }
 
   ctx.drawImage(
@@ -192,6 +259,12 @@ function draw() {
       enemy.size * 2
     );
   });
+
+  if (bossActive) {
+    ctx.drawImage(bossImg, bossX - 60, bossY - 60, 120, 120);
+    ctx.fillStyle = "white";
+    ctx.fillText("Boss HP: " + bossHP, bossX - 40, bossY - 70);
+  }
 
   ctx.fillStyle = "red";
   ctx.fillRect(10, 10, 200, 20);
